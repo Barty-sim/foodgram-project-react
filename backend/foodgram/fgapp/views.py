@@ -132,7 +132,7 @@ class ShoppingCartViewSet(CreateDeleteModelViewSet):
                 recipe=recipe
             )
         except Http404:
-            msg = f'Рецепт ({recipe.name}) уже отсутствует в списке покупок.'
+            msg = f'Рецепт ({recipe.name}) уже отсутствует в списке покупок..'
             return Response(
                 {'errors': msg}, status=status.HTTP_400_BAD_REQUEST
             )
