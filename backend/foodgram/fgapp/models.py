@@ -1,13 +1,14 @@
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import UniqueConstraint
+from colorfield.fields import ColorField
 
 from users.models import User
 
 
 class Tag(models.Model):
     name = models.CharField('Название', max_length=20)
-    color = models.CharField('Цвет', help_text='В формате НЕХ', max_length=7)
+    color = ColorField(default='#2A6CAA')
     slug = models.SlugField('Слаг', unique=True)
 
     class Meta:
@@ -53,7 +54,8 @@ class Recipe(models.Model):
     )
     cooking_time = models.IntegerField(
         'Время приготовления',
-        validators=[MinValueValidator(1), ]
+        validators=[MinValueValidator(
+        1, message='Минимальное время приготовления 1 минута'), ]
     )
     pub_date = models.DateTimeField('Дата публикации', auto_now_add=True)
 

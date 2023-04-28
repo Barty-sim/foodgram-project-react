@@ -4,6 +4,7 @@ from rest_framework import viewsets, permissions, mixins
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import status, Http404
+from django.db.models import BooleanField, Exists, OuterRef, Value
 
 from fgapp import services
 from fgapp.filters import RecipeFilterSet, IngredientSearchFilter
@@ -42,20 +43,24 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return RecipePostSerializer
 
     def get_queryset(self):
+        user = self.request.user
         queryset = Recipe.objects.all()
-        is_favorited = self.request.query_params.get('is_favorited')
-        is_in_cart = self.request.query_params.get('is_in_shopping_cart')
-        if is_favorited is not None and int(is_favorited) == 1:
-            favorites = FavoriteRecipe.objects.all().values_list(
-                'recipe', flat=True
+
+        if user.is_authenticated:
+            queryset = queryset.annotate(
+                is_favorited=Exists(FavoriteRecipe.objects.filter(
+                    user=user, recipe__pk=OuterRef('pk'))
+                ),
+                is_in_shopping_cart=Exists(ShoppingCart.objects.filter(
+                    user=user, recipe__pk=OuterRef('pk'))
+                )
             )
-            return queryset.filter(id__in=favorites)
-        if is_in_cart is not None and int(is_in_cart) == 1:
-            in_cart = ShoppingCart.objects.all().values_list(
-                'recipe', flat=True
+        else:
+            queryset = queryset.annotate(
+                is_favorited=Value(False, output_field=BooleanField()),
+                is_in_shopping_cart=Value(False, output_field=BooleanField())
             )
-            return queryset.filter(id__in=in_cart)
-        return queryset
+        return 
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)

@@ -3,6 +3,8 @@ from django.core.files.base import ContentFile
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 import uuid
+from django.db import transaction
+
 
 from .models import (Recipe, Ingredient, Tag, RecipeIngredients, RecipeTags,
                      FavoriteRecipe, ShoppingCart)
@@ -25,14 +27,14 @@ class TagSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Tag
-        fields = ('__all__')
+        fields = '__all__'
 
 
 class IngredientSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Ingredient
-        fields = ('__all__')
+        fields = '__all__'
 
 
 class GetIngredientsSerializer(serializers.ModelSerializer):
@@ -140,6 +142,7 @@ class RecipePostSerializer(serializers.ModelSerializer):
             )
         RecipeIngredients.objects.bulk_create(ingr_objs)
 
+    @transaction.atomic
     def create(self, validated_data):
         ingredients_data = validated_data.pop('ingredients')
         tags_id_list = validated_data.pop('tags')
@@ -147,44 +150,40 @@ class RecipePostSerializer(serializers.ModelSerializer):
         self.ingredients_tags_create(recipe, ingredients_data, tags_id_list)
         return recipe
 
+    @transaction.atomic
     def update(self, instance, validated_data):
         ingredients_data = validated_data.pop('ingredients')
         tags_id_list = validated_data.pop('tags')
         RecipeTags.objects.filter(recipe=instance).delete()
         RecipeIngredients.objects.filter(recipe=instance).delete()
         self.ingredients_tags_create(instance, ingredients_data, tags_id_list)
-        # instance.image = validated_data.get('image', instance.image)
-        # instance.name = validated_data.get('name', instance.name)
-        # instance.text = validated_data.get('text', instance.text)
-        # instance.cooking_time = validated_data.get(
-        #     'cooking_time', instance.cooking_time
-        # )
-        # instance.save()
         return super().update(instance, validated_data)
 
+    @transaction.atomic
     def validate(self, data):
-        if self.context['request'].method != 'POST':
-            return data
-        if not data['ingredients']:
-            raise serializers.ValidationError(
-                'Для создания рецепта заполните ингредиенты.'
-            )
-        if not data['tags']:
-            raise serializers.ValidationError(
-                'Для создания рецепта заполните теги.'
-            )
-        if data['cooking_time'] <= 0:
-            raise serializers.ValidationError(
-                'Время приготовления должно быть больше нуля.'
-            )
-        unique_list = []
-        for ingr in data['ingredients']:
-            if ingr['ingredient'] in unique_list:
+        ingredients = data.get('ingredients', None)
+        ingredients_set = set()
+        for ingredient in ingredients:
+            if type(ingredient.get('amount')) is str:
+                if not ingredient.get('amount').isdigit():
+                    raise serializers.ValidationError(
+                        ('Количество ингредиента должно быть числом')
+                    )
+            if int(ingredient.get('amount')) <= 0:
                 raise serializers.ValidationError(
-                    'Устраните дублирующиеся ингредиенты.'
+                    ('Минимальное количество ингридиентов 1')
                 )
-            else:
-                unique_list.append(ingr['ingredient'])
+            if int(data['cooking_time']) <= 0:
+                raise serializers.ValidationError(
+                    'Время готовки должно быть > 0 '
+                )
+            ingredient_id = ingredient.get('id')
+            if ingredient_id in ingredients_set:
+                raise serializers.ValidationError(
+                    'Ингредиент не должен повторяться.'
+                )
+            ingredients_set.add(ingredient_id)
+        data['ingredients'] = ingredients
         return data
 
 
