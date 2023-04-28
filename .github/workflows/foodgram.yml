@@ -27,7 +27,7 @@ jobs:
         # установка flake8 и его плагинов
         pip install flake8 pep8-naming flake8-broken-line flake8-return flake8-isort
         # установка зависимостей
-        cd api_yamdb/
+        cd backend/foodgram
         pip install -r requirements.txt 
     - name: Test with flake8 and django tests
       run: |
@@ -35,7 +35,7 @@ jobs:
         python -m flake8
         # перейти в папку, содержащую manage.py — 
         # <корневая_папка_infra_actions>/<папка_проекта>/manage.py
-        cd api_yamdb/
+        cd backend/foodgram
         # запустить написанные разработчиком тесты
         python manage.py test
         cd ../
