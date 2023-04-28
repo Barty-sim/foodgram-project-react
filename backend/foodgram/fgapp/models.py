@@ -55,8 +55,7 @@ class Recipe(models.Model):
     cooking_time = models.IntegerField(
         'Время приготовления',
         validators=[MinValueValidator(
-        1, message='Минимальное время приготовления 1 минута'), ]
-    )
+        1, message='Минимальное время приготовления 1 минута'), ])
     pub_date = models.DateTimeField('Дата публикации', auto_now_add=True)
 
     class Meta:

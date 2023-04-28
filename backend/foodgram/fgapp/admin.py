@@ -45,6 +45,7 @@ class TagAdmin(ModelAdmin):
     search_fields = ('name',)
     list_filter = ('slug',)
 
+
 @register(Ingredient)
 class IngredientAdmin(ModelAdmin):
     list_display = ('pk', 'name', 'measurement_unit')

@@ -60,7 +60,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 is_favorited=Value(False, output_field=BooleanField()),
                 is_in_shopping_cart=Value(False, output_field=BooleanField())
             )
-        return 
+        return
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
