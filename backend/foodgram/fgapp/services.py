@@ -4,7 +4,7 @@ from fgapp.models import RecipeIngredients
 
 
 def get_shopping_cart(user):
-    '''Загрузка файла со списком покупок'''
+    """Загрузка файла со списком покупок"""
     user_cart = user.shopping_carts.all()
     recipe_id_list = user_cart.values_list('recipe', flat=True)
     ingr_amounts = RecipeIngredients.objects.filter(
