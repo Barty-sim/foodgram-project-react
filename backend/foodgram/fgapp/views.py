@@ -32,6 +32,7 @@ class CreateDeleteModelViewSet(
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
+    queryset = Recipe.objects.all()
     permission_classes = (AuthorOrReadOnly,)
     pagination_class = CustomPageNumberPagination
     filter_backends = (DjangoFilterBackend,)
@@ -41,26 +42,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
         if self.request.method == 'GET':
             return RecipeGetSerializer
         return RecipePostSerializer
-
-    def get_queryset(self):
-        user = self.request.user
-        queryset = Recipe.objects.all()
-
-        if user.is_authenticated:
-            queryset = queryset.annotate(
-                is_favorited=Exists(FavoriteRecipe.objects.filter(
-                    user=user, recipe__pk=OuterRef('pk'))
-                ),
-                is_in_shopping_cart=Exists(ShoppingCart.objects.filter(
-                    user=user, recipe__pk=OuterRef('pk'))
-                )
-            )
-        else:
-            queryset = queryset.annotate(
-                is_favorited=Value(False, output_field=BooleanField()),
-                is_in_shopping_cart=Value(False, output_field=BooleanField())
-            )
-        return
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
