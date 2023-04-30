@@ -63,7 +63,7 @@ POSTGRES_PASSWORD - postgres (по умолчанию)
 ### *Frontend by:*
 https://github.com/yandex-praktikum/foodgram-project-react
 
-http://62.84.120.9
-http://62.84.120.9/recipes
-http://62.84.120.9/admin
-http://62.84.120.9/api
+http://158.160.48.71
+http://158.160.48.71/recipes
+http://158.160.48.71/admin
+http://158.160.48.71/api
