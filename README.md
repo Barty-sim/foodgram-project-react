@@ -1,7 +1,5 @@
 # Продуктовый помощник - Foodgram
 
-#### *Дипломная работа для Яндекс Практикума*
-#### *Diploma work for Yandex Practicum*
 
 ## Технологии / Tecnhologies:
 - Python 3.9
@@ -11,13 +9,12 @@
 - Docker
 - Postgres
 
-### http://62.84.120.9/
 
 
 ### To deploy this project need the next actions:
 - Скачиваем проект
 ```
-git clone https://github.com/DeffronMax/foodgram-project-react.git
+git clone https://github.com/Barty-sim/foodgram-project-react.git
 ```
 - Подключаемся к серверу
 ```
@@ -62,12 +59,7 @@ DB_NAME - postgres (по умолчанию)
 POSTGRES_USER - postgres (по умолчанию)
 POSTGRES_PASSWORD - postgres (по умолчанию)
 ```
-## Bon appetit !
 
-Для загрузки своих ингредиентов, вам нужно в папке data заменить файл ingredients.json, наполненный вашими ингредиентами. Они заполняются после выполнения миграции (data migration).
-
-### *Backend by:*
-https://github.com/deffronmax
 ### *Frontend by:*
 https://github.com/yandex-praktikum/foodgram-project-react
 
