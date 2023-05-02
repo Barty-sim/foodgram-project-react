@@ -170,6 +170,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         ).values(
             'ingredient__name',
             'ingredient__measurement_unit'
+        ).order_by('ingredient__name'
         ).annotate(amount=Sum('amount'))
 
         today = datetime.today()
