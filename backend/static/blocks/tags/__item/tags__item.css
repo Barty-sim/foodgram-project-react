@@ -1,0 +1,9 @@
+.tags__item {
+    display: flex;
+    align-items: center;
+    margin-right: 24px;
+}
+
+.tags__item:last-child {
+    margin-right: 0;
+}
